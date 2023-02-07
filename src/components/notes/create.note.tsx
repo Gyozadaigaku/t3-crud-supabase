@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/restrict-template-expressions */
 import type { FC } from "react";
 import type { SubmitHandler } from "react-hook-form";
 import { useForm } from "react-hook-form";
@@ -24,8 +25,11 @@ type CreateNoteInput = TypeOf<typeof createNoteSchema>;
 const CreateNote: FC<ICreateNoteProps> = ({ setOpenNoteModal }) => {
   const queryClient = useQueryClient();
   const { isLoading, mutate: createNote } = api.note.createNote.useMutation({
-    onSuccess() {
-      queryClient.invalidateQueries([["getNotes"], { limit: 10, page: 1 }]);
+    async onSuccess() {
+      await queryClient.invalidateQueries([
+        ["getNotes"],
+        { limit: 10, page: 1 },
+      ]);
       setOpenNoteModal(false);
       toast("Note created successfully", {
         type: "success",

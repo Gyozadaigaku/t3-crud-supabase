@@ -19,8 +19,11 @@ const NoteItem: FC<NoteItemProps> = ({ note }) => {
 
   const queryClient = useQueryClient();
   const { mutate: deleteNote } = api.note.deleteNote.useMutation({
-    onSuccess() {
-      queryClient.invalidateQueries([["getNotes"], { limit: 10, page: 1 }]);
+    async onSuccess() {
+      await queryClient.invalidateQueries([
+        ["getNotes"],
+        { limit: 10, page: 1 },
+      ]);
       setOpenNoteModal(false);
       toast("Note deleted successfully", {
         type: "success",
