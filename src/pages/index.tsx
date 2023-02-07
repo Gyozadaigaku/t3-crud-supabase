@@ -2,12 +2,30 @@ import { type NextPage } from "next";
 import Head from "next/head";
 import Link from "next/link";
 import { signIn, signOut, useSession } from "next-auth/react";
+import { useState } from "react";
+import { toast } from "react-toastify";
+import NoteModal from "@/components/note.modal";
+import CreateNote from "@/components/notes/create.note";
+import NoteItem from "@/components/notes/note.component";
 
-import { api } from "../utils/api";
+import { api } from "@/utils/api";
 
 const Home: NextPage = () => {
   const hello = api.example.hello.useQuery({ text: "from tRPC" });
-
+  const [openNoteModal, setOpenNoteModal] = useState(false);
+  const { data: notes } = api.note.getNotes.useQuery(
+    { limit: 10, page: 1 },
+    {
+      staleTime: 5 * 1000,
+      select: (data) => data.notes,
+      onError(err) {
+        toast(err.message, {
+          type: "error",
+          position: "top-right",
+        });
+      },
+    }
+  );
   return (
     <>
       <Head>
@@ -52,6 +70,37 @@ const Home: NextPage = () => {
           </div>
         </div>
       </main>
+      <div className="mx-auto max-w-[68rem] 2xl:max-w-[90rem]">
+        <div className="m-8 grid grid-cols-[repeat(auto-fill,_320px)] gap-7">
+          <div className="flex h-72 flex-col items-center justify-center rounded-lg border border-gray-200 bg-white p-4 shadow-md">
+            <div
+              onClick={() => setOpenNoteModal(true)}
+              className="flex h-20 w-20 cursor-pointer items-center justify-center rounded-full border-2 border-dashed border-ct-blue-600 text-5xl text-ct-blue-600"
+            >
+              <i className="bx bx-plus"></i>
+            </div>
+            <h4
+              onClick={() => setOpenNoteModal(true)}
+              className="mt-5 cursor-pointer text-lg font-medium text-ct-blue-600"
+            >
+              Add new note
+            </h4>
+          </div>
+          {/* Note Items */}
+
+          {notes?.map((note) => (
+            <NoteItem key={note.id} note={note} />
+          ))}
+
+          {/* Create Note Modal */}
+          <NoteModal
+            openNoteModal={openNoteModal}
+            setOpenNoteModal={setOpenNoteModal}
+          >
+            <CreateNote setOpenNoteModal={setOpenNoteModal} />
+          </NoteModal>
+        </div>
+      </div>
     </>
   );
 };
@@ -63,7 +112,7 @@ const AuthShowcase: React.FC = () => {
 
   const { data: secretMessage } = api.example.getSecretMessage.useQuery(
     undefined, // no input
-    { enabled: sessionData?.user !== undefined },
+    { enabled: sessionData?.user !== undefined }
   );
 
   return (
