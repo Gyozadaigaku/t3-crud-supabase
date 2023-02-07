@@ -54,6 +54,7 @@ const CreateNote: FC<ICreateNoteProps> = ({ setOpenNoteModal }) => {
     formState: { errors },
   } = methods;
 
+  // eslint-disable-next-line @typescript-eslint/require-await
   const onSubmitHandler: SubmitHandler<CreateNoteInput> = async (data) => {
     createNote(data);
   };

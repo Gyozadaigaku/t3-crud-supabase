@@ -64,6 +64,7 @@ const UpdateNote: FC<IUpdateNoteProps> = ({ note, setOpenNoteModal }) => {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
+  // eslint-disable-next-line @typescript-eslint/require-await
   const onSubmitHandler: SubmitHandler<UpdateNoteInput> = async (data) => {
     updateNote({ params: { noteId: note.id }, body: data });
   };
